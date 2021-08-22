@@ -1,16 +1,13 @@
-const { Candidate, Ticket, Medical } = require("../models");
+const { User } = require("../models");
 
 exports.monthly = async function (query) {
-  let candidates = await Candidate.countPerMonth(query);
-  let tickets = await Ticket.countPerMonth(query);
+  let users = await User.countPerMonth(query);
 
-  return { candidates, tickets };
+  return { users };
 };
 
 exports.all = async function (query) {
-  let candidates = await Candidate.countDocuments(query);
-  let tickets = await Ticket.countDocuments(query);
-  let medicals = await Medical.countDocuments(query);
+  let users = await User.countDocuments(query);
 
-  return { candidates, tickets, medicals };
+  return { users };
 };
