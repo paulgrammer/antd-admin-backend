@@ -16,14 +16,25 @@ module.exports = function (schema, fields) {
     },
     search: async function (q, opts) {
       if (!opts.where) opts.where = {};
-      let total = this.searchPartial(q, {}, "^").countDocuments();
-      let data = this.searchPartial(q, opts, "^")
+      let total = this.fuzzySearch(q).countDocuments();
+      let data = this.fuzzySearch(q)
         .where(opts.where)
         .skip(opts.skip)
         .limit(opts.limit)
         .select(opts.select)
         .populate(opts.populate);
       [data, total] = await Promise.all([data, total]);
+
+      if (!data.length && !total) {
+        total = this.searchPartial(q, {}, "^").countDocuments();
+        data = this.searchPartial(q, opts, "^")
+          .where(opts.where)
+          .skip(opts.skip)
+          .limit(opts.limit)
+          .select(opts.select)
+          .populate(opts.populate);
+        [data, total] = await Promise.all([data, total]);
+      }
 
       if (!data.length && !total) {
         total = this.searchPartial(q, {}, "").countDocuments();
